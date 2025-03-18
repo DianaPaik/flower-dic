@@ -1,8 +1,11 @@
 import { Stack } from "expo-router";
 
-const RootLayout = () => {
-  return <Stack 
-    screenOptions={{
+const StackLayout = () => {
+  return (
+    <Stack
+      screenOptions={{
+        headerBlurEffect: "regular",
+        headerTransparent: true,
         headerStyle: {
           backgroundColor: "#f4511e",
         },
@@ -16,9 +19,11 @@ const RootLayout = () => {
           paddingHorizontal: 10,
           backgroundColor: "#f0f0f0",
         },
-      }}>
-      <Stack.Screen name="index" options={{ title: 'Home'}} />
+      }}
+    >
+      <Stack.Screen name="index" options={{title: "Blur"}} />
     </Stack>
+  );
 };
 
-export default RootLayout;
+export default StackLayout;
