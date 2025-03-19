@@ -5,7 +5,6 @@ import CustomCalendar from '@/app/components/CustomCalendar';
 const calendar = () => {
     return (
         <View>
-            <Text>calendar</Text>
             <CustomCalendar />
         </View>
     );

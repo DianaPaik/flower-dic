@@ -1,59 +1,126 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { IconButton, Button, Dialog, Portal, PaperProvider, Text } from 'react-native-paper';
+import * as Font from 'expo-font';
+import { useFonts } from 'expo-font';
+import Arrow from '@/assets/icon/arrow.svg';
 
-// 날짜 데이터 생성
-const generateCalendarDates = (daysInMonth: number) => {
-    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+// 대한민국(KST) 기준으로 오늘 날짜 반환
+const getTodayInKST = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // 1월 = 0이므로 +1
+    const day = now.getDate();
+    return { year, month, day };
+};
+
+// 해당 월의 실제 일 수 계산
+const getDaysInMonth = (year: number, month: number) => {
+    return new Date(year, month, 0).getDate();
+};
+
+// 해당 월의 시작 요일을 계산 (이전 달의 종료 요일 다음 날이 시작 요일)
+const getStartDayOfMonth = (year: number, month: number) => {
+    if (month === 1) {
+        const prevYear = year - 1;
+        const prevMonth = 12;
+        return (new Date(prevYear, prevMonth, 0).getDay() + 1) % 7;
+    } else {
+        return (new Date(year, month - 1, 0).getDay() + 1) % 7;
+    }
 };
 
 const CustomCalendar: React.FC = () => {
-    const [selectedDate, setSelectedDate] = useState<number | null>(null);
-    const today = new Date().getDate();
-    const daysInMonth = 29; // 2월 기준
+    const [dialogVisible, setDialogVisible] = React.useState(false);
+    const showDialog = () => setDialogVisible(true);
+    const hideDialog = () => setDialogVisible(false);
 
-    const handleDateClick = (date: number) => setSelectedDate(date);
+    const { year, month, day: today } = getTodayInKST();
+    const [selectedDate, setSelectedDate] = useState<{ month: number; day: number }>({
+        month,
+        day: today
+    });
+    const [currentMonth, setCurrentMonth] = useState<number>(month);
+    const [fontsLoaded] = useFonts({
+        'KyoboHandwriting2019': require('@/assets/fonts/KyoboHandwriting2019.ttf'),
+    });
+
+    const daysInMonth = getDaysInMonth(year, currentMonth);
+    const startDay = getStartDayOfMonth(year, currentMonth);
+
+    const handleDateClick = (date: number) => {
+        setSelectedDate({ month: currentMonth, day: date });
+    };
+
 
     return (
-        <View style={styles.calendarBox}>
-            {/* 월 표시 */}
-            <View style={styles.monthBox}>
-                <TouchableOpacity style={styles.monthButton}>
-                    <Text style={styles.monthText}>2월</Text>
-                </TouchableOpacity>
-            </View>
+        <PaperProvider>
+            <View style={styles.calendarBox}>
+                {/* 월 표시 */}
+                <View style={styles.monthBox}>
+                    <View style={styles.monthButton}>
+                        <Text style={styles.monthText}>{currentMonth}월</Text>
+                        <IconButton
+                            icon={() => <Arrow width={24} height={24} />}
+                            onPress={showDialog}
+                            size={24}
+                        />
 
-            {/* 날짜 표시 */}
-            <View style={styles.dateBox}>
-                {generateCalendarDates(daysInMonth).map((date) => (
-                    <TouchableOpacity
-                        key={date}
-                        style={[
-                            styles.date,
-                            date === today && styles.today,
-                            date === selectedDate && styles.selectedDate
-                        ]}
-                        onPress={() => handleDateClick(date)}
-                    >
-                        {date === today && <View style={styles.todayCircle} />}
-                        <Text style={[
-                            styles.dateText,
-                            date === today && styles.todayText
-                        ]}>{date}</Text>
-                    </TouchableOpacity>
-                ))}
+                        {/* Dialog 출력 */}
+                        <Portal>
+                            <Dialog visible={dialogVisible} onDismiss={hideDialog}>
+                                <Dialog.Title>알림</Dialog.Title>
+                                <Dialog.Content>
+                                    <Text variant="bodyMedium">이것은 간단한 다이얼로그입니다.</Text>
+                                </Dialog.Content>
+                                <Dialog.Actions>
+                                    <Button onPress={hideDialog}>확인</Button>
+                                </Dialog.Actions>
+                            </Dialog>
+                        </Portal>
+                    </View>
+                </View>
+
+                {/* 날짜 표시 */}
+                <View style={styles.dateBox}>
+                    {/* 빈 공간 채우기 (이전 월의 종료 요일 다음 칸에서 시작) */}
+                    {Array.from({ length: startDay }).map((_, index) => (
+                        <View key={`empty-${index}`} style={styles.emptyDate} />
+                    ))}
+
+                    {/* 날짜 렌더링 */}
+                    {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((date) => (
+                        <TouchableOpacity
+                            key={date}
+                            style={[
+                                styles.date,
+                                selectedDate.month === currentMonth && selectedDate.day === date && styles.selectedDate
+                            ]}
+                            onPress={() => handleDateClick(date)}
+                        >
+                            {selectedDate.month === currentMonth && selectedDate.day === date && (
+                                <View style={styles.selectedCircle} />
+                            )}
+                            <Text style={[
+                                styles.dateText,
+                                selectedDate.month === currentMonth && selectedDate.day === date && styles.selectedText
+                            ]}>
+                                {date}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
             </View>
-        </View>
+        </PaperProvider>
     );
 };
+
 
 const styles = StyleSheet.create({
     calendarBox: {
         width: '100%',
         maxWidth: 600,
         height: 'auto',
-        backgroundColor: '#f9f9f9',
-        borderRadius: 12,
-        elevation: 2,
         padding: 24,
     },
     monthBox: {
@@ -63,57 +130,64 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     monthButton: {
-        backgroundColor: '#4CAF50',
-        padding: 8,
-        borderRadius: 8,
+        flexDirection: 'row',
+        marginRight: 4,
     },
     monthText: {
-        color: '#fff',
+        fontFamily: 'KyoboHandwriting2019',
         fontWeight: 'bold',
         fontSize: 18,
+    },
+    weekDayBox: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 5,
+    },
+    weekDay: {
+        width: '14.285%', // 7개의 요일 균등 분배
+        textAlign: 'center',
+        fontFamily: 'KyoboHandwriting2019',
+        fontWeight: 'bold',
+        color: '#666',
     },
     dateBox: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 20,
     },
+    emptyDate: {
+        width: '14.285%', // 요일 위치 맞춤을 위한 빈 칸
+        height: 40,
+    },
     date: {
         width: '14.285%', // 7일을 균등하게 배치
         aspectRatio: 1,   // 정사각형 비율 유지
         alignItems: 'center',
+        fontFamily: 'KyoboHandwriting2019',
         justifyContent: 'center',
-        borderRadius: 8,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#ddd',
         position: 'relative',
         marginBottom: 5,
     },
-    today: {
-        backgroundColor: '#ffeb3b',
-        borderColor: '#fbc02d',
-    },
-    todayCircle: {
+    selectedCircle: {
         position: 'absolute',
         top: '50%',
         left: '50%',
-        transform: [{ translateX: -15 }, { translateY: -15 }],
+        transform: [{ translateX: -14.5 }, { translateY: -14.5 }],
         width: 29,
         height: 29,
         borderRadius: 50,
         backgroundColor: '#111',
         zIndex: 0,
     },
-    todayText: {
+    selectedText: {
         color: '#fff',
         zIndex: 1,
         position: 'relative',
-    },
-    selectedDate: {
-        backgroundColor: '#4CAF50',
+        fontFamily: 'KyoboHandwriting2019',
     },
     dateText: {
         fontSize: 16,
+        fontFamily: 'KyoboHandwriting2019',
     },
 });
 
