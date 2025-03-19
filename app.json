@@ -32,6 +32,11 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      ["expo-font",
+        {
+          "fonts": ["./assets/fonts/KyoboHandwriting2019.ttf"]
+        }
       ]
     ],
     "experiments": {

@@ -1,25 +1,32 @@
 import { Redirect } from "expo-router";
-import { Text, View, StyleSheet } from "react-native";
-
-// const index = () =>{
-//   return (
-//     <View style={styles.container}>
-//       <Text>Edit app/index.tsx to edit this screen.</Text>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   }
-// });
-
-// export default index;
+import * as Font from 'expo-font';
+import { useEffect, useState } from "react";
+import { setCustomText } from 'react-native-global-props';
 
 const StartPage = () => {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadFonts = async () => {
+      await Font.loadAsync({
+        'KyoboHandwriting2019': require('../assets/fonts/KyoboHandwriting2019.ttf'),
+      });
+      setFontsLoaded(true);
+    };
+
+    loadFonts();
+  }, []);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+  const customTextProps = {
+    style: {
+      fontFamily: 'KyoboHandwriting2019',
+    },
+  };
+  setCustomText(customTextProps);
+
   return <Redirect href="/home" />;
 };
 
