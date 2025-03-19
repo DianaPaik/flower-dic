@@ -1,5 +1,6 @@
 import { Link } from 'expo-router';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import ListItem from '@/app/components/ListItem';
 import React from 'react';
 
 const data = [
@@ -7,25 +8,23 @@ const data = [
     { id: '2', name: '해바라기' },
     { id: '3', name: '튤립' },
     { id: '4', name: '수국' },
+    { id: '5', name: '물망초' },
+    { id: '6', name: '꽃이름' },
+    { id: '7', name: '꽃' },
+    { id: '8', name: '뭔 꽃' },
+    { id: '9', name: '플라위' },
 ];
 
 const home = () => {
     return (
-    <View style={styles.container}>
-        <Text style={styles.title}>🌸 꽃 목록</Text>
-
-        <FlatList
-            data={data}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-                <Link href={`/list/${item.id}`} asChild>
-                    <TouchableOpacity style={styles.item}>
-                        <Text style={styles.itemText}>{item.name}</Text>
-                    </TouchableOpacity>
-                </Link>
-            )}
-        />
-    </View>
+        <View style={styles.container}>
+            <Text>🌸 꽃 목록</Text>
+            <FlatList
+                data={data}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => <ListItem id={item.id} name={item.name} />}
+            />
+        </View>
     );
 }
 
@@ -33,7 +32,7 @@ const home = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f0f8ff',
+        backgroundColor: 'transparent',
         padding: 20,
     },
     title: {
