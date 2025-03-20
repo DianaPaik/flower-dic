@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "flower-dic",
+    "name": "꽃말사전",
     "slug": "flower-dic",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FF4EAF"
       }
     },
     "web": {
@@ -30,7 +30,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#FF4EAF"
         }
       ],
       ["expo-font",
