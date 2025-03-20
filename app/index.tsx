@@ -2,7 +2,6 @@ import { Redirect } from "expo-router";
 import * as Font from 'expo-font';
 import { useEffect, useState } from "react";
 import { setCustomText } from 'react-native-global-props';
-
 const StartPage = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
