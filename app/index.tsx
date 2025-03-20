@@ -2,6 +2,7 @@ import { Redirect } from "expo-router";
 import * as Font from 'expo-font';
 import { useEffect, useState } from "react";
 import { setCustomText } from 'react-native-global-props';
+
 const StartPage = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
@@ -10,6 +11,14 @@ const StartPage = () => {
       await Font.loadAsync({
         'KyoboHandwriting2019': require('../assets/fonts/KyoboHandwriting2019.ttf'),
       });
+
+      const customTextProps = {
+        style: {
+          fontFamily: 'KyoboHandwriting2019',
+        },
+      };
+      setCustomText(customTextProps);
+
       setFontsLoaded(true);
     };
 
@@ -26,7 +35,7 @@ const StartPage = () => {
   };
   setCustomText(customTextProps);
 
-  return <Redirect href="/home" />;
+  return <Redirect href="/home" />
 };
 
 export default StartPage;
