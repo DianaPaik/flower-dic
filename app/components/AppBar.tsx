@@ -1,24 +1,26 @@
-import React from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Appbar } from 'react-native-paper';
 import { useNavigation } from 'expo-router';
-import { Image, StyleSheet, View, ImageBackground } from 'react-native';
+import { Image, StyleSheet, View, ImageBackground, Text } from 'react-native';
 import AppLogo from '@/assets/images/logo.png';
+import Animated from 'react-native-reanimated';
 import { Searchbar } from 'react-native-paper';
 import SearchIcon from '@/assets/icon/search.svg';
 import FilterIcon from '@/assets/icon/filter.svg';
-
+import { useFilterModal } from '@/app/components/FilterModal';
 
 const AppBar = ({ title }: { title: string }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const navigation = useNavigation();
+    const { presentModal } = useFilterModal();
 
     const clickSearchIcon = () => {
         console.log('onclick search icon');
     }
-
     const clickFilterIcon = () => {
-        console.log('onclick filter icon');
-    }
+        presentModal();
+        console.log('onclick filter icon');        
+    };
 
     return (
         <View>
@@ -36,10 +38,10 @@ const AppBar = ({ title }: { title: string }) => {
                     <View style={styles.searchRow}>
                         <Searchbar
                             style={styles.searchForm}
-                            icon={() => (<SearchIcon  style={styles.searchIcon}/>)}
+                            icon={() => (<SearchIcon style={styles.searchIcon} />)}
                             traileringIcon={() => (<FilterIcon />)}
-                            onIconPress={() => clickSearchIcon()}
-                            onTraileringIconPress={() => clickFilterIcon()}
+                            onIconPress={clickSearchIcon}
+                            onTraileringIconPress={clickFilterIcon}
                             inputStyle={{
                                 fontFamily: 'KyoboHandwriting2019',
                             }}
@@ -56,7 +58,7 @@ const AppBar = ({ title }: { title: string }) => {
 
 
 const styles = StyleSheet.create({
-    imgWrapper: { },
+    imgWrapper: {},
     headerAndSearch: {
         width: '100%',
         maxWidth: 600,
@@ -99,8 +101,19 @@ const styles = StyleSheet.create({
     },
     searchFormImg: {
         width: 24,
-        height: 24    
+        height: 24
     },
+    container: {
+        flex: 1,
+        padding: 24,
+        justifyContent: 'center',
+        backgroundColor: 'grey',
+    },
+    contentContainer: {
+        flex: 1,
+        alignItems: 'center',
+    },
+
 });
 
 export default AppBar;
