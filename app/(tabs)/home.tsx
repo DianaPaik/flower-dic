@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
 import ListItem from '@/app/components/ListItem';
 import React from 'react';
 
@@ -14,49 +14,27 @@ const data = [
     { id: '8', name: '뭔 꽃' },
     { id: '9', name: '플라위' },
 ];
+const { height } = Dimensions.get('window'); // 화면 높이 동적 계산
 
 const home = () => {
     return (
-        <View style={styles.container}>
-            <Text>🌸 꽃 목록</Text>
-            <FlatList
-                data={data}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <ListItem id={item.id} name={item.name} />}
-            />
-        </View>
+        <FlatList
+            style={styles.contentWrap}
+            data={data}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <ListItem id={item.id} name={item.name} />}
+        />
     );
 }
 
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'transparent',
-        padding: 20,
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#4CAF50',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    item: {
-        backgroundColor: '#ffffff',
-        padding: 15,
-        borderRadius: 8,
-        marginBottom: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 3,
-    },
-    itemText: {
-        fontSize: 18,
-        fontWeight: '500',
-        color: '#333',
+    contentWrap: {
+        minHeight: height - 60 - 172,
+        marginTop: 20,
+        marginBottom: 60,
+        paddingVertical: 0,   // 상하 패딩
+        paddingHorizontal: 24 // 좌우 패딩
     },
 });
 

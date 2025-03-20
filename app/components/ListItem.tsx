@@ -51,7 +51,6 @@ const ListItem: React.FC<ListItemProps> = ({ id, name, isBookmark }) => {
                     size={24}
                     onPress={handleToggleBookmark}
                 />
-
                 <Link href={`/list/${id}`} asChild>
                     <IconButton
                         style={styles.contentRightBtn}
@@ -67,31 +66,39 @@ const ListItem: React.FC<ListItemProps> = ({ id, name, isBookmark }) => {
 const styles = StyleSheet.create({
     contentbox: {
         display: 'flex',
+        flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         width: '100%',
         height: 56,
     },
     contentLeft: {
+        // display: 'flex',
         flexDirection: 'row',
         alignItems: 'center', 
+        width: 'auto'
     },
     imgbox: {
         width: 40,
         height: 40,
         borderRadius: 8,
         backgroundColor: '#f0f8ff',
+        backgroundSize: 'contain'
     },
     name: {
         paddingLeft: 12,
         fontSize: 16,
-        color: '#333',
+        fontFamily: 'KyoboHandwriting2019',
     },
     contentRight: {
-        display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
         width: 'auto',
+        // gap: 8
     },
     contentRightBtn: {
+        padding: 0,
+        marginHorizontal: 2,
         paddingLeft: 8,
     }
 });
