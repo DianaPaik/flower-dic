@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, } from 'react-native';
 import React from 'react';
 import { Button } from 'react-native-paper';
-import CustomSnackbar from '@/app/components/SnackBar';
+import CustomSnackbar from '@/app/components/CustomSnackBar';
 
 const bookmark = () => {
     const [visible, setVisible] = React.useState(false);
@@ -11,8 +11,7 @@ const bookmark = () => {
 
 
     return (
-        <View style={styles.container}>
-            <Text>🌸 Bookmark</Text>
+        <View>
             <Button onPress={onToggleSnackBar}>
                 {visible ? 'Hide' : 'Show'}
             </Button>
@@ -26,14 +25,5 @@ const bookmark = () => {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',   
-        backgroundColor: '#f0f8ff',
-    },
-});
 
 export default bookmark;
