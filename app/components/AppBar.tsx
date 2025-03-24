@@ -12,6 +12,7 @@ import { useFilterModal } from '@/app/components/FilterModal';
 import ArrowInHeader from '@/assets/icon/arrow_in_header.svg';
 import BookmarkIcon from '@/assets/icon/bookmark.svg';
 import BookmarkIconActive from '@/assets/icon/bookmark_active.svg';
+import ChipButton from '@/app/components/ChipButton';
 
 const AppBar = ({ title }: { title: string }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -79,7 +80,7 @@ const AppBar = ({ title }: { title: string }) => {
                                 style={styles.searchForm}
                                 icon={() => (<SearchIcon style={styles.searchIcon} />)}
                                 traileringIcon={() => (
-                                    applyFilterEmotions.length > 0  // ✅ 선택된 필터 데이터 기준
+                                    applyFilterEmotions.length > 0
                                         ? <FilterIconActive />
                                         : <FilterIcon />
                                 )}
@@ -94,6 +95,27 @@ const AppBar = ({ title }: { title: string }) => {
                             />
                         </View>
                     )}
+
+                    {/* 검색 조건이 있는 경우 */}
+                    {
+                        applyFilterEmotions.length > 0 && (
+                            <View style={styles.filterBox}>
+                                <View style={styles.filterBoxInner}>
+                                    {applyFilterEmotions.map((emotion) => (
+                                        <ChipButton
+                                            key={emotion}
+                                            label={emotion}
+                                            isActive={true}
+                                            // isActive={selectedEmotions.includes(emotion)}
+                                            onPress={() => (emotion)}
+                                        ></ChipButton>
+                                    ))
+                                    }
+                                </View>
+                            </View>
+                        )
+                    }
+
                 </View>
             </ImageBackground>
         </View>
@@ -175,6 +197,15 @@ const styles = StyleSheet.create({
     bookmarkIcon: {
         position: 'absolute',
         right: 0,
+    },
+    filterBox: {
+        minWidth: 552,
+        paddingBottom: 10,
+
+    },
+    filterBoxInner: {
+        paddingBottom: 10,
+        flexDirection: 'row',
     }
 });
 

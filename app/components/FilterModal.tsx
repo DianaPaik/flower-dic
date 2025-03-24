@@ -17,22 +17,31 @@ import { ScrollView } from 'react-native-gesture-handler';
 const FilterModalContext = createContext({
     toggleModal: () => { },
     isModalVisible: false,
-    applyFilterEmotions: [] as string[],   // 추가된 부분
-    setApplyFilterEmotions: (emotions: string[]) => { } // 추가된 부분
+    applyFilterEmotions: [] as string[],
+    setApplyFilterEmotions: (emotions: string[]) => { }
 });
 
 // FilterModal 컴포넌트
 const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
-    const { toggleModal, setApplyFilterEmotions } = useContext(FilterModalContext); // 추가된 dismissModal 호출
+    const { toggleModal, setApplyFilterEmotions } = useContext(FilterModalContext);
 
     const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
   
     const handleChipPress = (emotion: string) => {
-        setSelectedEmotions((prevSelected) =>
-            prevSelected.includes(emotion)
-                ? prevSelected.filter((item) => item !== emotion) // 이미 선택된 경우 해제
-                : [...prevSelected, emotion]                      // 선택되지 않은 경우 추가
-        );
+        setSelectedEmotions((prevSelected) => {
+            // 이미 선택된 경우 → 해제 가능
+            if (prevSelected.includes(emotion)) {
+                return prevSelected.filter((item) => item !== emotion);
+            }
+
+            // 선택된 Chip이 5개 이상이면 추가 선택 불가
+            if (prevSelected.length >= 5) {
+                return prevSelected;
+            }
+
+            // 선택 가능한 경우 추가
+            return [...prevSelected, emotion];
+        });
     };
 
     const clickFilterApplyBtn = () => {
