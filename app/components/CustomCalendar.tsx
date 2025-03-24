@@ -71,7 +71,6 @@ const CustomCalendar: React.FC = () => {
                     <IconButton
                         icon={() => <Arrow width={24} height={24} />}
                         onPress={showDialog}
-                        size={24}
                     />
                 </View>
             </View>
@@ -133,36 +132,21 @@ const CustomCalendar: React.FC = () => {
 const styles = StyleSheet.create({
     calendarBox: {
         width: '100%',
-        maxWidth: 600,
-        height: 'auto',
-        padding: 24,
+        height: '100%',
     },
     monthBox: {
+        paddingHorizontal: 12,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 10,
+
     },
     monthButton: {
         flexDirection: 'row',
-        marginRight: 4,
     },
     monthText: {
         fontFamily: 'KyoboHandwriting2019',
-        fontWeight: 'bold',
         fontSize: 18,
-    },
-    weekDayBox: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 5,
-    },
-    weekDay: {
-        width: '14.285%', // 7개의 요일 균등 분배
-        textAlign: 'center',
-        fontFamily: 'KyoboHandwriting2019',
-        fontWeight: 'bold',
-        color: '#666',
+        
     },
     dateBox: {
         flexDirection: 'row',
@@ -203,18 +187,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'KyoboHandwriting2019',
     },
+    // 팝업 스타일링 
     popup: {
         position: 'absolute',
         width: 'auto',
         maxWidth: 600,
         height: 'auto',
-        backgroundColor: '#fff',
+        backgroundColor: '/assets/images/background.png',
         borderRadius: 8,
         zIndex: 9999,
     },
     closebox: {
         margin: 20,
         marginBottom: 0,
+        marginRight: 24,
+        marginLeft: 24,
         display: 'flex',
         alignItems: 'flex-end',
     },
@@ -223,10 +210,15 @@ const styles = StyleSheet.create({
         height: 24,
     },
     contentbox: {
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        padding: 24,
+        display: 'flex',              
+        flexDirection: 'row',           
+        flexWrap: 'wrap',             
+        justifyContent: 'space-between', 
+        width: '100%',                
+        paddingTop: 0,
+        paddingRight: 24,
+        paddingBottom: 32,
+        paddingLeft: 24,
     },
     dateButton: {
         width: 66,
@@ -234,9 +226,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#e0e0e0',
-        borderRadius: 8,
-        margin: 4,
     },
 });
 
