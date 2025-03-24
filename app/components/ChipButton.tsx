@@ -5,7 +5,7 @@ import { StyleSheet, View, Text } from 'react-native';
 const ChipButton = ({ label, isActive, onPress }: { 
     label: string;
     isActive: boolean;
-    onPress: () => void;
+    onPress?: () => void;
     }) => (
     <Chip
         style={[styles.chipButton, isActive && styles.chipActive]}
