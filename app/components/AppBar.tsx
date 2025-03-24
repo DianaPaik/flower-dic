@@ -16,11 +16,11 @@ import BookmarkIconActive from '@/assets/icon/bookmark_active.svg';
 const AppBar = ({ title }: { title: string }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const navigation = useNavigation();
-    const { toggleModal, isModalVisible } = useFilterModal();
+    const { toggleModal, applyFilterEmotions } = useFilterModal();
 
     const pathname = usePathname();
     const [isBookmarked, setIsBookmarked] = React.useState(false);
-    const [isFiltterOn, setIsFiltterOn] = React.useState(false);
+    //const [isFiltterOn, setIsFiltterOn] = React.useState(false);
 
     const [canGoBack, setCanGoBack] = React.useState(false);
 
@@ -78,7 +78,11 @@ const AppBar = ({ title }: { title: string }) => {
                             <Searchbar
                                 style={styles.searchForm}
                                 icon={() => (<SearchIcon style={styles.searchIcon} />)}
-                                traileringIcon={() => (isFiltterOn ? <FilterIconActive /> : <FilterIcon />)}
+                                traileringIcon={() => (
+                                    applyFilterEmotions.length > 0  // ✅ 선택된 필터 데이터 기준
+                                        ? <FilterIconActive />
+                                        : <FilterIcon />
+                                )}
                                 onIconPress={clickSearchIcon}
                                 onTraileringIconPress={clickFilterIcon}
                                 inputStyle={{

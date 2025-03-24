@@ -16,15 +16,17 @@ import { ScrollView } from 'react-native-gesture-handler';
 // Context 생성
 const FilterModalContext = createContext({
     toggleModal: () => { },
-    isModalVisible: false
+    isModalVisible: false,
+    applyFilterEmotions: [] as string[],   // 추가된 부분
+    setApplyFilterEmotions: (emotions: string[]) => { } // 추가된 부분
 });
 
 // FilterModal 컴포넌트
 const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
-    const { toggleModal } = useContext(FilterModalContext); // 추가된 dismissModal 호출
+    const { toggleModal, setApplyFilterEmotions } = useContext(FilterModalContext); // 추가된 dismissModal 호출
 
     const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
-
+  
     const handleChipPress = (emotion: string) => {
         setSelectedEmotions((prevSelected) =>
             prevSelected.includes(emotion)
@@ -33,11 +35,19 @@ const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
         );
     };
 
+    const clickFilterApplyBtn = () => {
+        setApplyFilterEmotions([...selectedEmotions]);
+        console.log('Value:' + selectedEmotions);
+        toggleModal();
+    }
+
+
     return (
         <BottomSheetModal
             ref={ref}
-            snapPoints={['50%',]}
+            // snapPoints={['50%',]}
             backgroundStyle={{ backgroundColor: '#fff' }}
+            index={0}
         >
             <BottomSheetView style={styles.modal}>
                 <View style={styles.contentBox}>
@@ -81,7 +91,9 @@ const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
                     >
                         <Text style={styles.modalBarRestetText}>초기화</Text>
                     </Button>
-                    <Button style={styles.filterApplyBtn}>
+                    <Button style={styles.filterApplyBtn}
+                        onPress={() => clickFilterApplyBtn()}
+                    >
                         <Text style={styles.modalBarFilterApplyBtnText}>필터 적용</Text>
                     </Button>
                 </View>
@@ -94,6 +106,7 @@ const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
 export const FilterModalProvider = ({ children }: { children: React.ReactNode }) => {
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [applyFilterEmotions, setApplyFilterEmotions] = useState<string[]>([]);
 
     const toggleModal = () => {
         if (isModalVisible) {
@@ -105,7 +118,8 @@ export const FilterModalProvider = ({ children }: { children: React.ReactNode })
     };
 
     return (
-        <FilterModalContext.Provider value={{ toggleModal, isModalVisible }}>
+        <FilterModalContext.Provider value={{
+            toggleModal, isModalVisible, applyFilterEmotions, setApplyFilterEmotions}}>
             <BottomSheetModalProvider>
                 {children}
                 <FilterModal ref={bottomSheetModalRef} />
@@ -131,9 +145,7 @@ const styles = StyleSheet.create({
         zIndex: 9999,
     },
     contentBox: {
-        // width: '100%',
-        // height: '100%',
-        flex:1,
+        flex: 1,
         paddingHorizontal: 24,
         paddingBottom: 80
     },
@@ -209,7 +221,7 @@ const styles = StyleSheet.create({
     },
     filterApplyBtn: {
         lineHeight: 48,
-        width: '100%',
+        flex: 1,
         height: 48,
         backgroundColor: '#FF69B4',
         borderRadius: 8,
