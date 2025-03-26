@@ -24,6 +24,7 @@ const CustomSnackbar: React.FC<CustomSnackbarProps> = ({
                 visible={visible}
                 onDismiss={onDismiss}
                 elevation={0}
+                duration={500}
             // action={{
             //     label: actionLabel,
             //     onPress: onActionPress,
