@@ -77,8 +77,6 @@ const ListItem: React.FC<ListItemProps> = ({ id, name, isBookmark }) => {
                 visible={snackbarVisible}
                 message="꽃갈피에서 꽃을 삭제하였습니다."
                 onDismiss={onDismissSnackBar}
-                actionLabel="Undo"
-                onActionPress={() => console.log('Undo clicked')}
             />
         </>
     );
