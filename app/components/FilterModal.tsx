@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useRef, forwardRef } from 'react';
+import React, { createContext, useContext, useState, useRef, forwardRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import {
     BottomSheetModal,
@@ -17,36 +17,44 @@ import { ScrollView } from 'react-native-gesture-handler';
 const FilterModalContext = createContext({
     toggleModal: () => { },
     isModalVisible: false,
+    setApplyFilterEmotions: (emotions: string[]) => { },
     applyFilterEmotions: [] as string[],
-    setApplyFilterEmotions: (emotions: string[]) => { }
 });
 
 // FilterModal 컴포넌트
 const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
-    const { toggleModal, setApplyFilterEmotions } = useContext(FilterModalContext);
+    const { toggleModal, setApplyFilterEmotions, applyFilterEmotions, isModalVisible } = useContext(FilterModalContext);
+    useEffect(() => {
+        if (isModalVisible) {
+            setSelectedEmotions(applyFilterEmotions); 
+        }
+    }, [isModalVisible]);
 
     const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
   
     const handleChipPress = (emotion: string) => {
         setSelectedEmotions((prevSelected) => {
-            // 이미 선택된 경우 → 해제 가능
-            if (prevSelected.includes(emotion)) {
-                return prevSelected.filter((item) => item !== emotion);
-            }
+            let updatedSelected;
 
+            // 이미 선택된 경우 → 해제
+            if (prevSelected.includes(emotion)) {
+                updatedSelected = prevSelected.filter((item) => item !== emotion);
+            }
             // 선택된 Chip이 5개 이상이면 추가 선택 불가
-            if (prevSelected.length >= 5) {
+            else if (prevSelected.length >= 5) {
                 return prevSelected;
             }
-
             // 선택 가능한 경우 추가
-            return [...prevSelected, emotion];
+            else {
+                updatedSelected = [...prevSelected, emotion];
+            }
+
+            return updatedSelected;
         });
     };
 
     const clickFilterApplyBtn = () => {
-        setApplyFilterEmotions([...selectedEmotions]);
-        console.log('Value:' + selectedEmotions);
+        setApplyFilterEmotions(selectedEmotions); 
         toggleModal();
     }
 
@@ -55,6 +63,8 @@ const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
         <BottomSheetModal
             ref={ref}
             // snapPoints={['50%',]}
+            // onDismiss={() => setIsModalVisible(false)}
+            // onPresent={() => setIsModalVisible(true)}
             backgroundStyle={{ backgroundColor: '#fff' }}
             index={0}
         >
@@ -81,6 +91,7 @@ const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
                                                     key={emotion}
                                                     label={emotion}
                                                     isActive={selectedEmotions.includes(emotion)}
+                                                    styling="modal"
                                                     onPress={() => handleChipPress(emotion)}
                                                 ></ChipButton>
                                             ))
@@ -116,7 +127,7 @@ export const FilterModalProvider = ({ children }: { children: React.ReactNode })
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [applyFilterEmotions, setApplyFilterEmotions] = useState<string[]>([]);
-
+    const applyFilterBtnFlag = useRef<boolean>(false);
     const toggleModal = () => {
         if (isModalVisible) {
             bottomSheetModalRef.current?.dismiss();
@@ -128,7 +139,7 @@ export const FilterModalProvider = ({ children }: { children: React.ReactNode })
 
     return (
         <FilterModalContext.Provider value={{
-            toggleModal, isModalVisible, applyFilterEmotions, setApplyFilterEmotions}}>
+            toggleModal, isModalVisible, setApplyFilterEmotions, applyFilterEmotions }}>
             <BottomSheetModalProvider>
                 {children}
                 <FilterModal ref={bottomSheetModalRef} />
@@ -239,10 +250,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     modalBarFilterApplyBtnText: {
+        color: '#fff',
         fontSize: 16,
         fontFamily: 'KyoboHandwriting2019',
     },
     modalBarRestetText: {
+        color: '#767676',
         fontSize: 16,
         fontFamily: 'KyoboHandwriting2019',
     }

@@ -17,11 +17,10 @@ import ChipButton from '@/app/components/ChipButton';
 const AppBar = ({ title }: { title: string }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const navigation = useNavigation();
-    const { toggleModal, applyFilterEmotions } = useFilterModal();
+    const { toggleModal, applyFilterEmotions, setApplyFilterEmotions } = useFilterModal();
 
     const pathname = usePathname();
     const [isBookmarked, setIsBookmarked] = React.useState(false);
-    //const [isFiltterOn, setIsFiltterOn] = React.useState(false);
 
     const [canGoBack, setCanGoBack] = React.useState(false);
 
@@ -41,6 +40,11 @@ const AppBar = ({ title }: { title: string }) => {
     }, [navigation]);
 
     const toggleBookmark = () => setIsBookmarked(!isBookmarked);
+
+    const handleDelete = (label: string) => {
+        const updatedValues = applyFilterEmotions.filter(value => value !== label);
+        setApplyFilterEmotions(updatedValues); 
+    };
 
 
     return (
@@ -106,8 +110,10 @@ const AppBar = ({ title }: { title: string }) => {
                                             key={emotion}
                                             label={emotion}
                                             isActive={true}
-                                            // isActive={selectedEmotions.includes(emotion)}
-                                            onPress={() => (emotion)}
+                                            closeIcon={true}
+                                            styling="header"
+                                            onDelete={handleDelete}
+                                            // onPress={() => (emotion)}
                                         ></ChipButton>
                                     ))
                                     }
