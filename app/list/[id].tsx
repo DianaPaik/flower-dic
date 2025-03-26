@@ -96,6 +96,7 @@ export default function ListDetailScreen() {
                                         key={key}
                                         label={value}
                                         isActive={true}
+                                        styling="detail"
                                         // onPress={() => { }}
                                     />
                                 ))}
@@ -121,7 +122,7 @@ export default function ListDetailScreen() {
 }
 const styles = StyleSheet.create({
     scrollContent: {
-        // paddingBottom: 80, // 버튼 공간 확보
+        // paddingTop: 80, // 버튼 공간 확보
     },
     detailsFlowerImg: {
         marginTop: 56,

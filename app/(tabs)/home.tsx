@@ -18,17 +18,20 @@ const { height } = Dimensions.get('window'); // 화면 높이 동적 계산
 
 const home = () => {
     return (
-        <FlatList
-            style={styles.contentWrap}
-            data={data}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <ListItem id={item.id} name={item.name} />}
-        />
+        <View>
+            <FlatList
+                style={styles.contentWrap}
+                data={data}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => <ListItem id={item.id} name={item.name} />}
+            />
+        </View>
     );
 }
 
 
 const styles = StyleSheet.create({
+
     contentWrap: {
         minHeight: height - 60 - 172,
         marginTop: 20,
