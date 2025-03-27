@@ -1,12 +1,19 @@
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import React from 'react';
 import CustomCalendar from '@/app/components/CustomCalendar';
 
 const calendar = () => {
     return (
-        <View style={styles.contentWrap}>
-            <CustomCalendar />
-        </View>
+        <>
+            <ImageBackground
+                style={styles.imgWrapper}
+                source={require('../../assets/images/background.png')}
+            >
+                <View style={styles.contentWrap}>
+                    <CustomCalendar />
+                </View>
+            </ImageBackground>
+        </>
     );
 }
 const styles = StyleSheet.create({
@@ -18,6 +25,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+
+    imgWrapper: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
     }
 });
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { IconButton, Button, Dialog, Portal, Text } from 'react-native-paper';
+import { View, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { IconButton, Button, Dialog, Portal, Text, Modal } from 'react-native-paper';
 import * as Font from 'expo-font';
 import { useFonts } from 'expo-font';
 import Arrow from '@/assets/icon/arrow.svg';
@@ -16,10 +16,12 @@ const getTodayInKST = () => {
     return { year, month, day };
 };
 
+
 // 해당 월의 실제 일 수 계산
 const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month, 0).getDate();
 };
+
 
 // 해당 월의 시작 요일을 계산 (이전 달의 종료 요일 다음 날이 시작 요일)
 const getStartDayOfMonth = (year: number, month: number) => {
@@ -32,28 +34,23 @@ const getStartDayOfMonth = (year: number, month: number) => {
     }
 };
 
+
 const CustomCalendar: React.FC = () => {
     const [dialogVisible, setDialogVisible] = React.useState(false);
     const showDialog = () => setDialogVisible(true);
     const hideDialog = () => setDialogVisible(false);
+    const LEAP_YEAR = 2024; // 윤년
 
-    const { year, month, day: today } = getTodayInKST();
-    const [selectedDate, setSelectedDate] = useState<{ month: number; day: number }>({
-        month,
-        day: today
-    });
+    const { month, day: today } = getTodayInKST();
+
     const [currentMonth, setCurrentMonth] = useState<number>(month);
 
     const [fontsLoaded] = useFonts({
         'KyoboHandwriting2019': require('@/assets/fonts/KyoboHandwriting2019.ttf'),
     });
 
-    const daysInMonth = getDaysInMonth(year, currentMonth);
-    const startDay = getStartDayOfMonth(year, currentMonth);
-
-    const handleDateClick = (date: number) => {
-        setSelectedDate({ month: currentMonth, day: date });
-    };
+    const daysInMonth = getDaysInMonth(LEAP_YEAR, currentMonth);
+    const startDay = getStartDayOfMonth(LEAP_YEAR, currentMonth);
 
     const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
 
@@ -78,51 +75,59 @@ const CustomCalendar: React.FC = () => {
             {/* 날짜 표시 */}
             <View style={styles.dateBox}>
                 {/* 빈 공간 채우기 (이전 월의 종료 요일 다음 칸에서 시작) */}
-                {Array.from({ length: startDay }).map((_, index) => (
-                    <View key={`empty-${index}`} style={styles.emptyDate} />
-                ))}
+                {/* {Array.from({ length: startDay }).map((_, index) => ( */}
+                {/* <View key={`empty-${index}`} style={styles.emptyDate} /> */}
+                {/* ))} */}
 
                 {/* 날짜 렌더링 */}
-                {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((date) => (
-                    <TouchableOpacity
-                        key={date}
-                        style={[
-                            styles.date,
-                            selectedDate.month === currentMonth && selectedDate.day === date && styles.selectedDate
-                        ]}
-                        onPress={() => handleDateClick(date)}
-                    >
-                        {selectedDate.month === currentMonth && selectedDate.day === date && (
-                            <View style={styles.selectedCircle} />
-                        )}
-                        <Text style={[
-                            styles.dateText,
-                            selectedDate.month === currentMonth && selectedDate.day === date && styles.selectedText
-                        ]}>
-                            {date}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
+                {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((date) => {
+                    const isToday = currentMonth === month && date === today;
+
+                    return (
+                        <TouchableOpacity
+                            key={date}
+                            style={styles.date}
+                            onPress={() => { }}
+                        >
+                            {isToday && <View style={styles.selectedCircle} />}
+                            <Text
+                                style={[
+                                    styles.dateText,
+                                    isToday && styles.selectedText
+                                ]}
+                            >
+                                {date}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                })}
             </View>
 
             {/* Dialog 컴포넌트 추가 */}
             <Portal>
-                <Dialog visible={dialogVisible} onDismiss={hideDialog}>
-                    {/* 닫기 버튼 */}
-                    <View style={styles.closebox}>
-                        <TouchableOpacity onPress={hideDialog}>
-                            <CloseIcon style={styles.closeIcon} />
-                        </TouchableOpacity>
-                    </View>
-                    {/* 월 선택 박스 */}
-                    <View style={styles.contentbox}>
-                        {months.map((month, index) => (
-                            <TouchableOpacity key={month} style={styles.dateButton} onPress={() => handleMonthSelect(index + 1)}>
-                                <Text style={styles.dateText}>{month}</Text>
+                <Modal visible={dialogVisible} onDismiss={hideDialog} contentContainerStyle={styles.modalContainer} style={styles.dialog}>
+                    <ImageBackground
+                        source={require('@/assets/images/background.png')}
+                        style={styles.dialogBackground}
+                        resizeMode="cover"
+                        imageStyle={{ borderRadius: 8 }}
+                    >
+                        {/* 닫기 버튼 */}
+                        <View style={styles.closebox}>
+                            <TouchableOpacity onPress={hideDialog}>
+                                <CloseIcon style={styles.closeIcon} />
                             </TouchableOpacity>
-                        ))}
-                    </View>
-                </Dialog>
+                        </View>
+                        {/* 월 선택 박스 */}
+                        <View style={styles.contentbox}>
+                            {months.map((month, index) => (
+                                <TouchableOpacity key={month} style={styles.dateButton} onPress={() => handleMonthSelect(index + 1)}>
+                                    <Text style={styles.dateText}>{month}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </ImageBackground>
+                </Modal>
             </Portal>
         </View>
     );
@@ -142,11 +147,11 @@ const styles = StyleSheet.create({
     },
     monthButton: {
         flexDirection: 'row',
+        alignItems: 'center',
     },
     monthText: {
         fontFamily: 'KyoboHandwriting2019',
         fontSize: 18,
-        
     },
     dateBox: {
         flexDirection: 'row',
@@ -187,22 +192,26 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'KyoboHandwriting2019',
     },
-    // 팝업 스타일링 
-    popup: {
-        position: 'absolute',
-        width: 'auto',
-        maxWidth: 600,
-        height: 'auto',
-        backgroundColor: '/assets/images/background.png',
-        borderRadius: 8,
-        zIndex: 9999,
+    /**  모달 관련 스타일 수정 **/
+    modalContainer: {
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        marginHorizontal: 24,
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    dialogBackground: {
+        // flex: 1,
+        maxHeight: 400,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center', 
+        paddingVertical: 32,
     },
     closebox: {
-        margin: 20,
-        marginBottom: 0,
-        marginRight: 24,
-        marginLeft: 24,
-        display: 'flex',
+        width: '100%',
+        paddingHorizontal: 24,
+        marginBottom: 10,
         alignItems: 'flex-end',
     },
     closeIcon: {
@@ -210,23 +219,22 @@ const styles = StyleSheet.create({
         height: 24,
     },
     contentbox: {
-        display: 'flex',              
-        flexDirection: 'row',           
-        flexWrap: 'wrap',             
-        justifyContent: 'space-between', 
-        width: '100%',                
-        paddingTop: 0,
-        paddingRight: 24,
-        paddingBottom: 32,
-        paddingLeft: 24,
+        width: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignContent: 'center',
+        paddingHorizontal: 12,
     },
     dateButton: {
-        width: 66,
-        height: 66,
-        display: 'flex',
+        width: '25%', // 4개씩 한 줄
+        aspectRatio: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: 20
+        // marginBottom: 12,
     },
+
 });
 
 export default CustomCalendar;
