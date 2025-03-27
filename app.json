@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FF4EAF"
-      }
+      },
+      "package": "com.team1am.flowerdic"
     },
     "web": {
       "bundler": "metro",
@@ -33,14 +34,25 @@
           "backgroundColor": "#FF4EAF"
         }
       ],
-      ["expo-font",
+      [
+        "expo-font",
         {
-          "fonts": ["./assets/fonts/KyoboHandwriting2019.ttf"]
+          "fonts": [
+            "./assets/fonts/KyoboHandwriting2019.ttf"
+          ]
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e8d75530-1f33-410e-a86c-6a4532016ad7"
+      }
     }
   }
 }
