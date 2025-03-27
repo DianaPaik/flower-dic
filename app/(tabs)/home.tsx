@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+
 import { View, Text, FlatList, Dimensions, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import ListItem from '@/app/components/ListItem';
 import React from 'react';
