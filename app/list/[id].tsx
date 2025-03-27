@@ -1,7 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
-import { View, Text, StyleSheet, Dimensions, Image, Linking, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, Linking, Alert, ScrollView, ImageBackground } from 'react-native';
 import { Button } from 'react-native-paper';
 import ChipButton from '@/app/components/ChipButton';
+import { useAppBar } from '@/app/components/AppBar';
+import { useRef } from 'react';
+import { NativeScrollEvent, NativeSyntheticEvent, findNodeHandle, UIManager } from 'react-native';
+
 
 export default function ListDetailScreen() {
     // URL에서 'id' 값을 가져오기
@@ -80,52 +84,84 @@ export default function ListDetailScreen() {
             })
             .catch((err) => console.error("URL 열기 실패:", err));
     };
+
+    const { setName } = useAppBar();
+    const imgViewRef = useRef<View>(null);
+
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        if (!imgViewRef.current) return;
+
+        const scrollY = event.nativeEvent.contentOffset.y;
+
+        imgViewRef.current.measure((x, y, width, height, pageX, pageY) => {
+            if (pageY + height < 56) {
+                // 이미지가 AppBar 뒤로 완전히 사라짐
+                setName(item.title);  // 꽃 이름을 AppBar에 표시
+                // console.log('################# event ')
+            } else {
+                setName('');
+            }
+        });
+    };
+
+
     return (
         <>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <View style={styles.detailsFlowerImg}>
-                    <Image source={item.img} style={styles.detailsFlowerImgImage} />
-                </View>
-                <View style={styles.contentWrap}>
-                    <View style={styles.contentBox}>
-                        <View style={styles.nameBox}>
-                            <Text style={styles.flowerName}>{item.title}</Text>
-                            <View style={styles.flowerCategory}>
-                                {categoryData.map(([key, value]) => (
-                                    <ChipButton
-                                        key={key}
-                                        label={value}
-                                        isActive={true}
-                                        styling="detail"
+            <ImageBackground
+                style={styles.imgWrapper}
+                source={require('@/assets/images/background.png')}
+            >
+                <ScrollView onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.scrollContent}>
+                    <View ref={imgViewRef} style={styles.detailsFlowerImg}>
+                        <Image source={item.img} style={styles.detailsFlowerImgImage} />
+                    </View>
+                    <View style={styles.contentWrap}>
+                        <View style={styles.contentBox}>
+                            <View style={styles.nameBox}>
+                                <Text style={styles.flowerName}>{item.title}</Text>
+                                <View style={styles.flowerCategory}>
+                                    {categoryData.map(([key, value]) => (
+                                        <ChipButton
+                                            key={key}
+                                            label={value}
+                                            isActive={true}
+                                            styling="detail"
                                         // onPress={() => { }}
-                                    />
+                                        />
+                                    ))}
+                                </View>
+                            </View>
+                            {/* 자동으로 데이터 렌더링 */}
+                            <View style={styles.flowerAttributeBoxContainer}>
+                                {details.map(([key, value]) => (
+                                    <View key={key} style={styles.flowerAttributeBox}>
+                                        <Text style={styles.name}>{key}</Text>
+                                        <Text style={styles.content}>{value}</Text>
+                                    </View>
                                 ))}
                             </View>
+                            <Button style={styles.gotoGoogle} onPress={() => gotoGoogle(item.title)}>
+                                <Text style={styles.gotoGoogleText}> 구글에서 검색 </Text>
+                            </Button>
                         </View>
-                        {/* 자동으로 데이터 렌더링 */}
-                        <View style={styles.flowerAttributeBoxContainer}>
-                            {details.map(([key, value]) => (
-                                <View key={key} style={styles.flowerAttributeBox}>
-                                    <Text style={styles.name}>{key}</Text>
-                                    <Text style={styles.content}>{value}</Text>
-                                </View>
-                            ))}
-                        </View>
-                        <Button style={styles.gotoGoogle} onPress={() => gotoGoogle(item.title)}>
-                            <Text style={styles.gotoGoogleText}> 구글에서 검색 </Text>
-                        </Button>
                     </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </ImageBackground>
         </>
     );
 }
 const styles = StyleSheet.create({
+    imgWrapper: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover', // 배경화면이 꽉 차게 표시
+    },
     scrollContent: {
         // paddingTop: 80, // 버튼 공간 확보
     },
     detailsFlowerImg: {
-        marginTop: 56,
+        // marginTop: 56,
         width: '100%',
         height: 200,
     },

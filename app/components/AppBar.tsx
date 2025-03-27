@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Appbar } from 'react-native-paper';
 import { useNavigation, usePathname } from 'expo-router';
 import { IconButton } from 'react-native-paper';
@@ -15,6 +15,23 @@ import BookmarkIconActive from '@/assets/icon/bookmark_active.svg';
 import ChipButton from '@/app/components/ChipButton';
 import CustomSnackbar from '@/app/components/CustomSnackBar';
 import { ScrollView } from 'react-native-gesture-handler';
+
+const AppBarContext = createContext({
+    name: '',
+    setName: (name: string) => { }
+});
+
+export const AppBarProvider = ({ children }: { children: React.ReactNode }) => {
+    const [name, setName] = useState('');
+    return (
+        <AppBarContext.Provider value={{ name, setName }}>
+            {children}
+        </AppBarContext.Provider>
+    );
+};
+
+export const useAppBar = () => useContext(AppBarContext);
+
 
 type AppBarProps = {
     title?: string;
@@ -33,6 +50,9 @@ const AppBar = ({
     showBookmark = false,
     showHeaderImg = false
 }: AppBarProps) => {
+
+    const { name } = useAppBar();
+
     const [searchQuery, setSearchQuery] = React.useState('');
     const navigation = useNavigation();
     const pathname = usePathname();
@@ -64,16 +84,21 @@ const AppBar = ({
         <ImageBackground
             source={require('@/assets/images/background.png')}
             style={styles.background}
-            resizeMode="cover" // 💡 크기 맞추되 자름 (비율 유지)
+            resizeMode="cover" 
         >
             <View style={styles.headerAndSearch}>
                 <View style={styles.header}>
                     {showBackButton && navigation.canGoBack() && (
-                        <IconButton
-                            style={styles.leftBox}
-                            icon={() => <ArrowInHeader width={24} height={24} />}
-                            onPress={() => navigation.goBack()}
-                        />
+                        <View style={styles.leftGroup}>
+                            <IconButton
+                                style={[styles.leftBox, { margin: 0, padding: 0 }]}
+                                icon={() => <ArrowInHeader width={24} height={24} />}
+                                onPress={() => navigation.goBack()}
+                            />
+                            {name !== '' && (
+                                <Text style={styles.leftTitleText}>{name}</Text>
+                            )}
+                        </View>
                     )}
 
                     {showHeaderImg && (
@@ -115,7 +140,7 @@ const AppBar = ({
                             placeholder="검색어를 입력하세요"
                             onChangeText={setSearchQuery}
                             value={searchQuery}
-                            inputStyle={{ fontFamily: 'KyoboHandwriting2019', marginTop: -4}}
+                            inputStyle={{ fontFamily: 'KyoboHandwriting2019', marginTop: -4 }}
                         />
                     </View>
                 )}
@@ -215,12 +240,22 @@ const styles = StyleSheet.create({
         color: '#000',
         flex: 1,
         // textAlign: 'center',
-        justifyContent: 'flex-start',
+        // justifyContent: 'flex-start',
+        justifyContent: 'space-between',
         marginLeft: 8
+    },
+    leftGroup: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        // gap: 4
     },
     leftBox: {
         width: 'auto',
         height: 'auto',
+    },
+    leftTitleText: {
+        fontFamily: 'KyoboHandwriting2019',
+        fontSize: 16
     },
     bookmarkIcon: {
         position: 'absolute',
