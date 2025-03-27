@@ -6,6 +6,7 @@ import { PaperProvider } from 'react-native-paper';
 import { ThemeProvider } from "@/theme/ThemeProvider";
 import { FilterModalProvider } from '@/app/components/FilterModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler'; // 추가
+import { useResponsiveAppBarHeight } from '@/hooks/useResponsiveAppBarHeight';
 
 const StackLayout = () => {
   const pathname = usePathname();
@@ -16,31 +17,55 @@ const StackLayout = () => {
     '/calendar': '꽃달력'
   };
 
+  const paddingTop = useResponsiveAppBarHeight({
+    withSearch: pathname === '/home',
+    small: pathname === '/bookmark' || pathname.startsWith('/list/'),
+  });
+
+
   const title = routeTitleMap[pathname];
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
         <FilterModalProvider>
-          <PaperProvider>
+          <PaperProvider >
             <Stack
               screenOptions={{
                 animation: 'fade',
-                header: () => <AppBar title={title || ''} />,
-                headerBlurEffect: "regular",
-                headerTransparent: true,
-                contentStyle: {
-                  paddingTop: 10,
-                  paddingHorizontal: 0,
-                  backgroundColor: "#transparent",
+                header: () => {
+                  if (pathname === '/home') {
+                    return <AppBar title="" showSearch showFilter showHeaderImg />;
+                  }
+                  if (pathname === '/bookmark') {
+                    return <AppBar title="꽃갈피" showBackButton />;
+                  }
+                  if (pathname === '/calendar') {
+                    return <AppBar title="꽃달력" showBackButton />;
+                  }
+                  if (pathname.startsWith('/list/')) {
+                    return <AppBar showBackButton showBookmark />;
+                  }
+                  return undefined;
                 },
+                // headerShown:
+                //   ['/home', '/bookmark', '/calendar'].includes(pathname) ||
+                //   pathname.startsWith('/list/')
+                // headerBlurEffect: "regular",
+                // headerTransparent: true,
+                // headerStyle: {
+                //   backgroundColor: 'transparent',
+                // },
               }}
             >
               <Stack.Screen
                 name="index"
                 options={{
-                  headerShown: true
-                }} />
+                  contentStyle: {
+                    paddingTop,
+                  },
+                }}
+              />
             </Stack>
           </PaperProvider>
         </FilterModalProvider>

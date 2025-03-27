@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, ImageBackground } from 'react-native';
 import React from 'react';
 import NavbarSearchActive from '@/assets/icon/navbar_search_active.svg';
 import NavbarBookmarkActive from '@/assets/icon/navbar_bookmark_active.svg';
@@ -12,18 +12,28 @@ import NavbarCalendarDeactive from '@/assets/icon/navbar_calender_deactive.svg';
 
 export default function Layout() {
     const screenWidth = Dimensions.get('window').width;
+
     return (
-        <SafeAreaView style={styles.safeAreaContainer} edges={['top', 'left', 'right']}>
-            <View style={styles.container}>
+        <>
+            {/* <ImageBackground
+                source={require('../../assets/images/background.png')}
+                style={styles.backgroundImage}
+            > */}
+            <View style={{ flex: 1 }}>
+                {/* <SafeAreaView style={styles.safeAreaContainer} edges={['top', 'left', 'right']}> */}
+                {/* 전역 배경화면 추가 */}
+
+                {/* <View style={styles.container}> */}
                 <Tabs
                     screenOptions={{
                         tabBarShowLabel: false,
-                        tabBarStyle: {
-                            backgroundColor: '#fff',
-                            height: 60,
-                            width: screenWidth, // Use full screen width
-                            position: 'absolute',
-                        },
+                        headerShown: false,
+                        // tabBarStyle: {
+                        //     backgroundColor: '#fff',
+                        //     height: 60,
+                        //     width: screenWidth, // Use full screen width
+                        //     position: 'absolute',
+                        // },
                     }}
                 >
                     <Tabs.Screen
@@ -43,7 +53,6 @@ export default function Layout() {
                     <Tabs.Screen
                         name="bookmark"
                         options={{
-
                             tabBarIcon: ({ size, focused }) => (
                                 focused ? (
                                     <NavbarBookmarkActive width={size} height={size} />
@@ -67,22 +76,32 @@ export default function Layout() {
                     />
                 </Tabs>
             </View>
-        </SafeAreaView>
+
+            {/* </SafeAreaView> */}
+            {/* </View > */}
+            {/* </ImageBackground> */}
+        </>
     );
 }
 
 const styles = StyleSheet.create({
     safeAreaContainer: {
         flex: 1,
-        backgroundColor: '#f0f0f0',  // SafeAreaView 배경색 설정
+        backgroundColor: 'transparent',
     },
     container: {
         flex: 1,
-        backgroundColor: '#f0f0f0',
+        // backgroundColor: '#f0f0f0',
+    },
+    backgroundImage: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover', // 배경화면이 꽉 차게 표시
     },
     iconWrapper: {
         alignSelf: 'center',
         justifyContent: 'center',
-        height: '100%', 
+        height: '100%',
     },
 });

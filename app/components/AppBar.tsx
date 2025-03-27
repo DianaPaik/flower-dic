@@ -13,137 +13,160 @@ import ArrowInHeader from '@/assets/icon/arrow_in_header.svg';
 import BookmarkIcon from '@/assets/icon/bookmark.svg';
 import BookmarkIconActive from '@/assets/icon/bookmark_active.svg';
 import ChipButton from '@/app/components/ChipButton';
+import CustomSnackbar from '@/app/components/CustomSnackBar';
+import { ScrollView } from 'react-native-gesture-handler';
 
-const AppBar = ({ title }: { title: string }) => {
+type AppBarProps = {
+    title?: string;
+    showSearch?: boolean;
+    showFilter?: boolean;
+    showBackButton?: boolean;
+    showBookmark?: boolean;
+    showHeaderImg?: boolean;
+};
+
+const AppBar = ({
+    title,
+    showSearch = false,
+    showFilter = false,
+    showBackButton = false,
+    showBookmark = false,
+    showHeaderImg = false
+}: AppBarProps) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const navigation = useNavigation();
-    const { toggleModal, applyFilterEmotions, setApplyFilterEmotions } = useFilterModal();
-
     const pathname = usePathname();
+
+    const { toggleModal, applyFilterEmotions, setApplyFilterEmotions } = useFilterModal();
     const [isBookmarked, setIsBookmarked] = React.useState(false);
-
-    const [canGoBack, setCanGoBack] = React.useState(false);
-
-    const isHome = pathname === '/home';
-    const isDetailPage = pathname.split('/').length === 3;
-
-    const clickSearchIcon = () => {
-        console.log('onclick search icon');
-    }
-    const clickFilterIcon = () => {
-        toggleModal();
-        console.log('onclick filter icon');
-    };
-
-    React.useEffect(() => {
-        if (navigation) setCanGoBack(navigation.canGoBack());
-    }, [navigation]);
-
-    const toggleBookmark = () => setIsBookmarked(!isBookmarked);
+    const [snackbarVisible, setSnackbarVisible] = React.useState(false);
 
     const handleDelete = (label: string) => {
         const updatedValues = applyFilterEmotions.filter(value => value !== label);
-        setApplyFilterEmotions(updatedValues); 
+        setApplyFilterEmotions(updatedValues);
     };
 
+    const clickFilterIcon = () => {
+        toggleModal();
+    };
+
+    const toggleBookmark = () => {
+        if (isBookmarked) {
+            setSnackbarVisible(true); // 북마크 해제 시만 snackbar
+        }
+        setIsBookmarked((prev) => !prev);
+    };
+
+    const onDismissSnackBar = () => setSnackbarVisible(false);
 
     return (
-        <View>
-            <ImageBackground style={styles.imgWrapper} source={require('../../assets/images/background.png')} >
-                <View style={styles.headerAndSearch}>
-                    {/* 첫 번째 줄: 로고 영역 */}
-                    <View style={styles.header}>
-                        {isHome ? (
-                            <Image source={AppLogo} style={styles.headerImg} />
-                        ) : navigation.canGoBack() ? (
-                            <IconButton
-                                style={styles.leftBox}
-                                size={24}
-                                icon={() => <ArrowInHeader width={24} height={24} />}
-                                onPress={() => navigation.goBack()} />
-                        ) : null}
 
-                        {title && !isHome && (
-                            <Text style={styles.titleText}>{title}</Text>
-                        )}
-
-                        {isDetailPage && (
-                            <IconButton
-                                style={styles.bookmarkIcon}
-                                size={24}
-                                icon={() => <BookmarkIcon color={isBookmarked ? 'blue' : 'gray'} />}
-                                onPress={toggleBookmark}
-                            />
-                        )}
-                    </View>
-
-                    {/* 두 번째 줄: 검색바 영역 */}
-                    {pathname === '/home' && (
-                        <View style={styles.searchRow}>
-                            <Searchbar
-                                style={styles.searchForm}
-                                icon={() => (<SearchIcon style={styles.searchIcon} />)}
-                                traileringIcon={() => (
-                                    applyFilterEmotions.length > 0
-                                        ? <FilterIconActive />
-                                        : <FilterIcon />
-                                )}
-                                onIconPress={clickSearchIcon}
-                                onTraileringIconPress={clickFilterIcon}
-                                inputStyle={{
-                                    fontFamily: 'KyoboHandwriting2019',
-                                }}
-                                placeholder="검색어를 입력하세요"
-                                onChangeText={setSearchQuery}
-                                value={searchQuery}
-                            />
-                        </View>
+        <ImageBackground
+            source={require('@/assets/images/background.png')}
+            style={styles.background}
+            resizeMode="cover" // 💡 크기 맞추되 자름 (비율 유지)
+        >
+            <View style={styles.headerAndSearch}>
+                <View style={styles.header}>
+                    {showBackButton && navigation.canGoBack() && (
+                        <IconButton
+                            style={styles.leftBox}
+                            icon={() => <ArrowInHeader width={24} height={24} />}
+                            onPress={() => navigation.goBack()}
+                        />
                     )}
 
-                    {/* 검색 조건이 있는 경우 */}
-                    {
-                        applyFilterEmotions.length > 0 && (
-                            <View style={styles.filterBox}>
-                                <View style={styles.filterBoxInner}>
-                                    {applyFilterEmotions.map((emotion) => (
-                                        <ChipButton
-                                            key={emotion}
-                                            label={emotion}
-                                            isActive={true}
-                                            closeIcon={true}
-                                            styling="header"
-                                            onDelete={handleDelete}
-                                            // onPress={() => (emotion)}
-                                        ></ChipButton>
-                                    ))
-                                    }
-                                </View>
-                            </View>
-                        )
-                    }
+                    {showHeaderImg && (
+                        <Image source={AppLogo} style={styles.headerImg} />
+                    )}
 
+                    {title && (
+                        <Text style={styles.titleText}>{title}</Text>
+                    )}
+
+                    {showBookmark && (
+                        <IconButton
+                            style={styles.bookmarkIcon}
+                            size={24}
+                            icon={() =>
+                                isBookmarked
+                                    ? <BookmarkIconActive width={24} height={24} />
+                                    : <BookmarkIcon width={24} height={24} />
+                            }
+                            onPress={toggleBookmark}
+                        />
+                    )}
+                    <CustomSnackbar
+                        visible={snackbarVisible}
+                        message="꽃갈피에서 꽃을 삭제하였습니다."
+                        onDismiss={onDismissSnackBar}
+                    />
                 </View>
-            </ImageBackground>
-        </View>
+
+                {showSearch && (
+                    <View style={styles.searchRow}>
+                        <Searchbar
+                            style={styles.searchForm}
+                            icon={() => <SearchIcon style={styles.searchIcon} />}
+                            traileringIcon={() =>
+                                applyFilterEmotions.length > 0 ? <FilterIconActive /> : <FilterIcon />
+                            }
+                            onTraileringIconPress={clickFilterIcon}
+                            placeholder="검색어를 입력하세요"
+                            onChangeText={setSearchQuery}
+                            value={searchQuery}
+                            inputStyle={{ fontFamily: 'KyoboHandwriting2019', marginTop: -4}}
+                        />
+                    </View>
+                )}
+
+                {showFilter && applyFilterEmotions.length > 0 && (
+                    <View style={styles.filterBox}>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.filterBoxInner}
+                        >
+                            {applyFilterEmotions.map((emotion) => (
+                                <ChipButton
+                                    key={emotion}
+                                    label={emotion}
+                                    isActive={true}
+                                    closeIcon={true}
+                                    styling="header"
+                                    onDelete={handleDelete}
+                                />
+                            ))}
+                        </ScrollView>
+                    </View>
+                )}
+            </View>
+        </ImageBackground>
+
     );
-}
+};
 
 
 const styles = StyleSheet.create({
-    imgWrapper: {},
+    background: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
     headerAndSearch: {
         width: '100%',
         maxWidth: 600,
         paddingHorizontal: 24,
+        shadowColor: 'transparent',
+        // elvation: 0,
         // height: 120,
         // paddingTop: 30,
     },
     header: {
         width: '100%',
-        height: 60,                // 높이 확장
+        height: 56,                // 높이 확장
         alignItems: 'center',
         flexDirection: 'row',      // 가로 배치
-        //        justifyContent: 'space-between', // 로고와 BackAction 간격 확보
         justifyContent: 'flex-start',
         paddingHorizontal: 12,     // 양옆 패딩 추가
     },
@@ -191,27 +214,27 @@ const styles = StyleSheet.create({
         fontFamily: 'KyoboHandwriting2019',
         color: '#000',
         flex: 1,
-        textAlign: 'center',
+        // textAlign: 'center',
+        justifyContent: 'flex-start',
         marginLeft: 8
     },
     leftBox: {
         width: 'auto',
         height: 'auto',
-        alignItems: 'center',
-        gap: 8
     },
     bookmarkIcon: {
         position: 'absolute',
         right: 0,
     },
     filterBox: {
-        minWidth: 552,
+        width: '100%',
         paddingBottom: 10,
-
     },
     filterBoxInner: {
-        paddingBottom: 10,
         flexDirection: 'row',
+        alignItems: 'center',
+        gap: 2, // 칩 사이 간격
+        paddingHorizontal: 4,
     }
 });
 
