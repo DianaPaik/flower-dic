@@ -1,10 +1,12 @@
-import React, { createContext, useContext, useState, useRef, forwardRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useCallback, createContext, useContext, useState, useRef, forwardRef, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import {
     BottomSheetModal,
     BottomSheetModalProvider,
     BottomSheetView,
-    BottomSheetScrollView
+    BottomSheetScrollView,
+    BottomSheetBackdrop,
+    
 } from '@gorhom/bottom-sheet';
 import { Button, IconButton } from 'react-native-paper';
 import CloseBtn from '@/assets/icon/close.svg';
@@ -58,6 +60,19 @@ const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
         toggleModal();
     }
 
+    const renderBackdrop = useCallback(
+        (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+                {...props}
+                appearsOnIndex={0}
+                disappearsOnIndex={-1}
+                opacity={0.5}  // 배경 어두움 정도 조절
+                pressBehavior="close"  // 배경 누르면 모달 닫힘
+            />
+        ),
+        []
+    );
+
 
     return (
         <BottomSheetModal
@@ -65,10 +80,16 @@ const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
             // snapPoints={['50%',]}
             // onDismiss={() => setIsModalVisible(false)}
             // onPresent={() => setIsModalVisible(true)}
-            backgroundStyle={{ backgroundColor: '#fff' }}
+            // backgroundStyle={{ backgroundColor: 'transparent' }}
             index={0}
+            backdropComponent={renderBackdrop}
         >
             <BottomSheetView style={styles.modal}>
+                <ImageBackground
+                    source={require('@/assets/images/background.png')}
+                    style={styles.imageBackground}
+                    resizeMode="cover"
+                >
                 <View style={styles.contentBox}>
                     <View style={styles.header}>
                         <Text style={styles.filterHeaderText}>필터</Text>
@@ -117,6 +138,7 @@ const FilterModal = forwardRef<BottomSheetModal, {}>((props, ref) => {
                         <Text style={styles.modalBarFilterApplyBtnText}>필터 적용</Text>
                     </Button>
                 </View>
+                </ImageBackground>
             </BottomSheetView>
         </BottomSheetModal>
     );
@@ -153,6 +175,12 @@ export const useFilterModal = () => {
 };
 
 const styles = StyleSheet.create({
+    imageBackground: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'space-between',
+    },
     modal: {
         position: 'absolute',
         width: '100%',
@@ -230,6 +258,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         flexDirection: 'row',
         paddingVertical: 10,
+        borderTopColor: '#E6E6E6',
+        borderTopWidth: 1,
     },
     resetBtn: {
         lineHeight: 48,
