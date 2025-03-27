@@ -127,13 +127,12 @@ const styles = StyleSheet.create({
         color: '#FF4EAF'
     },
     detailChipButton: {
-        width: 'auto',
         alignSelf: 'flex-start',
         backgroundColor: '#FFD8ED',
         marginRight: 4,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#FF4EAF'
+        borderColor: '#FF4EAF',
     },
 
     /* Default 스타일 */
@@ -141,8 +140,8 @@ const styles = StyleSheet.create({
         width: 'auto',
         alignSelf: 'flex-start',
         // paddingHorizontal: 20,
-        marginRight: 10,
-        marginBottom: 8,
+        // marginRight: 10,
+        // marginBottom: 8,
         backgroundColor: '#f0f0f0',
         borderRadius: 20,
         borderWidth: 1,
